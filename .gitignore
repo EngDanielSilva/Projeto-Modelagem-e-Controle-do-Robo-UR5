@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+planejamento_trajetoria/outputs/*.png
+!planejamento_trajetoria/outputs/.gitkeep
+.DS_Store
