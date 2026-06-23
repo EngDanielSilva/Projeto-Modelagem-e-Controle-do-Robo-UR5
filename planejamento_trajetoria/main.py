@@ -55,25 +55,42 @@ def main():
 
     posicao_cartesiana, orientacao_rpy = reconstruir_pose_cartesiana(modelo, posicao_juntas)
 
+    pos_real, rpy_real, simulou_com_sucesso = None, None, False
     try:
         interface = InterfaceSimulacao()
         agenda_eventos = montar_agenda_de_eventos(rotulos, info)
-        executar_tarefa_no_simulador(interface, posicao_juntas, agenda_eventos)
+        pos_real, rpy_real = executar_tarefa_no_simulador(interface, posicao_juntas, agenda_eventos)
         interface.finalizar()
+        simulou_com_sucesso = True
     except Exception as erro:
         print(f"[AVISO] Simulador indisponivel ou interrompido: {erro}")
 
     print("[INFO] Gerando figuras...")
     painel = PainelDeGraficos()
     painel.grafico_espaco_juntas(
-        tempo, posicao_juntas, velocidade_juntas, aceleracao_juntas, info,
+        tempo, posicao_juntas, velocidade_juntas, aceleracao_juntas, info, rotulos,
         os.path.join(pasta_de_saida, "pp_juntas.png"),
     )
     painel.grafico_espaco_cartesiano(
-        tempo, posicao_cartesiana, orientacao_rpy, info,
+        tempo, posicao_cartesiana, orientacao_rpy, info, rotulos,
         os.path.join(pasta_de_saida, "pp_cartesiano.png"),
     )
-    painel.grafico_percurso_3d(posicao_cartesiana, os.path.join(pasta_de_saida, "pp_trajetoria3d.png"))
+    painel.grafico_percurso_3d(
+        posicao_cartesiana, info, rotulos,
+        os.path.join(pasta_de_saida, "pp_trajetoria3d.png"),
+    )
+    painel.grafico_projecoes_2d(
+        posicao_cartesiana, info, rotulos,
+        os.path.join(pasta_de_saida, "pp_projecoes_2d.png"),
+    )
+
+    if simulou_com_sucesso:
+        painel.grafico_erros_validacao(
+            tempo, posicao_cartesiana, pos_real, orientacao_rpy, rpy_real,
+            os.path.join(pasta_de_saida, "pp_validacao_erros.png"),
+        )
+    else:
+        print("[AVISO] Gráfico de validação (ground truth) não gerado: simulador indisponível.")
 
     print("[INFO] Etapa A2 - Pick-and-Place concluido!")
 

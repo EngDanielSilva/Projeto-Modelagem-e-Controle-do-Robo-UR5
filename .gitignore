@@ -2,9 +2,5 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-planejamento_trajetoria/outputs/*.png
 !planejamento_trajetoria/outputs/.gitkeep
 .DS_Store
-pp_cartesiano.png
-pp_juntas.png
-pp_trajetoria3d.png
